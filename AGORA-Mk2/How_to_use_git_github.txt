@@ -1,0 +1,56 @@
+This is my test branch
+
+[특정 브랜치 복제하기]
+
+git clone -b [branch_name] <repository-url>
+
+[커밋 기록 확인하기]
+
+git log
+
+[변경 사항 확인하기]
+
+git diff
+
+[변경 사항 적용하기]
+
+git pull (-u [branch_name])
+ => -u의 u는 --set-upstream의 축약형
+
+[로컬 브랜치 생성하기]
+
+git branch [branch_name]
+
+[브랜치 전환 명령어]
+
+git switch [branch_name]
+
+원격 저장소의 브랜치를 기반으로 새로운 로컬 브랜치를 생성하고,
+로컬에서 원격 브랜치를 자동으로 추적하도록 할 때는 다음 명령어 사용
+git switch --create [branch_name] --track origin/[branch_name]
+
+[브랜치 조회 명령어]
+
+원격 브랜치
+git branch -r
+
+로컬 브랜치
+git branch -l
+
+원격, 로컬 모두 확인하기
+git branch -a
+
+[변경 내용 add -> commit -> push]
+
+git add [변경내용 파일]            =>     변경사항이 생긴 파일을 Change 상태에서 Staged Changes 상태로 바꿈
+                                       변경내용 파일에 점(.)을 붙이면 모든 변경 파일을 add함
+git commit -m "메세지 내용 작성"    =>     Staged Changes 상태의 파일들을 메세지를 붙여 commit함
+git push -u origin apple        =>     Commit을 깃허브에 업로드하기
+
+[로컬 브랜치를 로컬 메인 브랜치와 병합하기]
+
+git checkout main
+git merge Apple_branch
+(로컬 메인 브랜치 변경사항을 원격 특정 브랜치에 푸시하고자 한다면)
+git branch   => 현재 main branch에 있는지 확인하기
+git push -u origin [branch_name]

@@ -1,0 +1,75 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata: 
+  name: db-pv
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: /mnt/shared
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - {key: kubernetes.io/hostname, operator: In, values: [k8s-node1]}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: db-pvc
+  namespace: d-ns
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db
+  namespace: d-ns
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      tier: database
+  template:
+    metadata:
+      labels:
+        tier: database
+    spec:
+      containers:
+      - image: mongo:4
+        name: db
+        ports:
+        - containerPort: 27017
+        volumeMounts:
+        - name: db-pvc
+          mountPath: /data/db
+      restartPolicy: Always
+      volumes:
+        - name: db-pvc
+          persistentVolumeClaim:
+            claimName: db-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db-svc
+  namespace: d-ns
+  labels:
+    tier: database
+spec:
+  type: ClusterIP
+  selector:
+    tier: database
+  ports:
+    - port: 27017
+      protocol: TCP
+      targetPort: 27017
+
