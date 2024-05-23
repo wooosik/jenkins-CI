@@ -1,7 +1,7 @@
 node {
     stage('Clone repository') {
         git credentialsId: 'github-access', url: 
-        'https://github.com/wooosik/jenkins-CI.git"
+        'https://github.com/wooosik/jenkins-CI.git'
  }
     stage('Build image') {
         dockerImage = docker.build("wooosik/agorafront:2.0")
