@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: nginx-lb
+  namespace: default
+  labels:
+    k8s-app: nginx-lb
+spec:
+  selector:
+    matchLabels:
+      name: nginx-lb
+  template:
+    metadata:
+      labels:
+        name: nginx-lb
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+          hostPort: 80
+        volumeMounts:
+        - name: nginx-config
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
+      volumes:
+      - name: nginx-config
+        configMap:
+          name: nginx-config
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+  namespace: default
+data:
+  nginx.conf: |
+    events {
+      worker_connections 1024;
+    }
+    http {
+      upstream backend {
+        server 192.168.56.100:32323;
+        server 192.168.56.101:32323;
+        server 192.168.56.102:32323;
+      }
+      upstream frontend {
+        server 192.168.56.100:31313;
+        server 192.168.56.101:31313;
+        server 192.168.56.102:31313;
+      }
+      server {
+        listen 80;
+        server_name backend.agora.com;
+
+        location / {
+          proxy_pass http://backend;
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+        }
+      }
+      server {
+        listen 80;
+        server_name frontend.agora.com;
+
+        location / {
+          proxy_pass http://frontend;
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+        }
+      }
+    }
+

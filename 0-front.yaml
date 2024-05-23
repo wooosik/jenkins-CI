@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: front
+  namespace: f-ns
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      tier: frontend
+  template:
+    metadata:
+      labels:
+        tier: frontend
+    spec:
+      containers:
+      - image: chooooo/agora-mk2:front_final_6.0
+        name: front
+        ports:
+        - containerPort: 8080
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: front-svc
+  namespace: f-ns
+spec:
+  selector:
+    tier: frontend
+  type: NodePort
+  ports:
+  - port: 8080
+    protocol: TCP
+    nodePort: 31313
+  selector:
+    tier: frontend
