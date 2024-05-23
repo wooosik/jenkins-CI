@@ -14,10 +14,10 @@ spec:
         tier: frontend
     spec:
       containers:
-      - image: chooooo/agora-mk2:front_final_6.0
+        - image: wooosik/agorafront:1.0
         name: front
         ports:
-        - containerPort: 8080
+        - containerPort: 8081
       restartPolicy: Always
 ---
 apiVersion: v1
@@ -30,7 +30,7 @@ spec:
     tier: frontend
   type: NodePort
   ports:
-  - port: 8080
+  - port: 8081
     protocol: TCP
     nodePort: 31313
   selector:
